@@ -19,6 +19,11 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
         addManifestPlaceholders(mapOf(
+// TODO: запросить для проверки
+//            "VKIDRedirectHost" to "vk.com",
+//            "VKIDRedirectScheme" to "vkключ",
+//            "VKIDClientID" to ключ_цифрами,
+//            "VKIDClientSecret" to "SHA1"
         ))
 
     }
