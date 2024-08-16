@@ -37,11 +37,27 @@ class MainActivity : AppCompatActivity() {
     private fun observeViewModel() {
         lifecycleScope.launch {
             viewModel.authState.collect { state ->
-                binding.textStatus.text = when (state) {
-                    is AuthState.Idle -> "Ожидаю авторизации"
-                    is AuthState.Loading -> "Отправка токена..."
-                    is AuthState.Success -> "Токен успешно отправлен"
-                    is AuthState.Error -> "Ошибка: ${state.message}"
+                when (state) {
+                    is AuthState.Idle -> {
+                        binding.textStatus.text = "Ожидаю авторизации"
+                        binding.textAuthentication.text = ""
+                    }
+
+                    is AuthState.Loading -> {
+                        binding.textStatus.text = "Отправка токена..."
+                        binding.textAuthentication.text =
+                            "Отправляем данные: ${viewModel.getAuthRequestData()}"
+                    }
+
+                    is AuthState.Success -> {
+                        binding.textStatus.text = "Токен успешно отправлен"
+                        binding.textAuthentication.text = "Данные успешно отправлены на сервер"
+                    }
+
+                    is AuthState.Error -> {
+                        binding.textStatus.text = "Ошибка: ${state.message}"
+                        binding.textAuthentication.text = "Ошибка при отправке данных"
+                    }
                 }
             }
         }

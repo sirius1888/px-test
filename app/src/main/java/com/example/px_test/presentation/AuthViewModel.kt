@@ -3,6 +3,7 @@ package com.example.px_test.presentation
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.px_test.common.Constants
+import com.example.px_test.data.network.AuthRequest
 import com.example.px_test.domain.AuthUseCase
 import com.vk.id.VKIDAuthFail
 import com.vk.id.VKIDUser
@@ -23,7 +24,10 @@ class AuthViewModel @Inject constructor(
     private val _authState = MutableStateFlow<AuthState>(AuthState.Idle)
     val authState: StateFlow<AuthState> = _authState.asStateFlow()
 
+    private var authRequestData: AuthRequest? = null
+
     fun sendAuthData(token: String, userData: VKIDUser) {
+        authRequestData = AuthRequest(token, userData)
         viewModelScope.launch {
             authUseCase(token, userData)
                 .onStart { _authState.value = AuthState.Loading }
@@ -42,7 +46,14 @@ class AuthViewModel @Inject constructor(
     fun notifyError(error: VKIDAuthFail) {
         _authState.value = AuthState.Error(error.description)
     }
+
+    fun getAuthRequestData(): String {
+        return authRequestData?.let {
+            "Токен: ${it.token}, Данные пользователя: ${it.userData}"
+        } ?: "Нет данных"
+    }
 }
+
 
 
 sealed class AuthState {
