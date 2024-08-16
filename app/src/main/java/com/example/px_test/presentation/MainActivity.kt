@@ -33,7 +33,18 @@ class MainActivity : AppCompatActivity() {
             }
         )
     }
+
     private fun subscribeToEvent() {
+        lifecycleScope.launch {
+            viewModel.authState.collect { state ->
+                when (state) {
+                    is AuthState.Idle -> binding.textStatus.text = "Ожидаю авторизации"
+                    is AuthState.Loading -> binding.textStatus.text = "Отправка токена..."
+                    is AuthState.Success -> binding.textStatus.text = "Токен успешно отправлен"
+                    is AuthState.Error -> binding.textStatus.text = "Ошибка: ${state.message}"
+                }
+            }
+        }
     }
 }
 

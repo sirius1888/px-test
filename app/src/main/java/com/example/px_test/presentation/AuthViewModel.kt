@@ -3,6 +3,7 @@ import androidx.lifecycle.ViewModel
 class AuthViewModel @Inject constructor(
     private val authUseCase: AuthUseCase
 ) : ViewModel() {
+
     private val _authState = MutableStateFlow<AuthState>(AuthState.Idle)
     val authState: StateFlow<AuthState> = _authState
 
@@ -10,6 +11,7 @@ class AuthViewModel @Inject constructor(
         viewModelScope.launch {
         }
     }
+
     fun notifyError(error: VKIDAuthFail) {
         _authState.value = AuthState.Error(error.description)
     }
