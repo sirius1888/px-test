@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
+    <uses-permission android:name="android.permission.INTERNET"/>
 
     <application
+        android:name=".di.PXApplication"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -11,13 +13,19 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Pxtest"
-        tools:targetApi="31">
+        tools:targetApi="34">
+
         <activity
-            android:name=".MainActivity"
+            android:name=".presentation.MainActivity"
             android:exported="true">
+
+            <meta-data android:name="VKIDClientID" android:value="${VKIDClientID}"/>
+            <meta-data android:name="VKIDClientSecret" android:value="${VKIDClientSecret}"/>
+            <meta-data android:name="VKIDRedirectHost" android:value="${VKIDRedirectHost}"/>
+            <meta-data android:name="VKIDRedirectScheme" android:value="${VKIDRedirectScheme}"/>
+
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>

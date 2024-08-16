@@ -24,6 +24,14 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun loginAction() {
+        binding.loginVk.setCallbacks(
+            onAuth = { _, token ->
+                viewModel.sendAuthData(token.token, token.userData)
+            },
+            onFail = { _, fail ->
+                viewModel.notifyError(fail)
+            }
+        )
     }
     private fun subscribeToEvent() {
     }
