@@ -19,11 +19,11 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
 
-        loginAction()
-        subscribeToEvent()
+        setupUI()
+        observeViewModel()
     }
 
-    private fun loginAction() {
+    private fun setupUI() {
         binding.loginVk.setCallbacks(
             onAuth = { _, token ->
                 viewModel.sendAuthData(token.token, token.userData)
@@ -34,17 +34,16 @@ class MainActivity : AppCompatActivity() {
         )
     }
 
-    private fun subscribeToEvent() {
+    private fun observeViewModel() {
         lifecycleScope.launch {
             viewModel.authState.collect { state ->
-                when (state) {
-                    is AuthState.Idle -> binding.textStatus.text = "Ожидаю авторизации"
-                    is AuthState.Loading -> binding.textStatus.text = "Отправка токена..."
-                    is AuthState.Success -> binding.textStatus.text = "Токен успешно отправлен"
-                    is AuthState.Error -> binding.textStatus.text = "Ошибка: ${state.message}"
+                binding.textStatus.text = when (state) {
+                    is AuthState.Idle -> "Ожидаю авторизации"
+                    is AuthState.Loading -> "Отправка токена..."
+                    is AuthState.Success -> "Токен успешно отправлен"
+                    is AuthState.Error -> "Ошибка: ${state.message}"
                 }
             }
         }
     }
 }
-

@@ -12,21 +12,18 @@ import javax.inject.Inject
 interface AuthRepository {
     fun sendAuthData(token: String, userData: VKIDUser): Flow<Result<Unit>>
 }
+
 class AuthRepositoryImpl @Inject constructor(
     private val apiService: ApiService
 ) : AuthRepository {
     override fun sendAuthData(token: String, userData: VKIDUser): Flow<Result<Unit>> = flow {
         try {
-            val request = AuthRequest(
-                token = token,
-                userData = userData
-            )
+            val request = AuthRequest(token, userData)
             val response = apiService.sendAuthData(request)
-
             if (response.isSuccessful) {
                 emit(Result.success(Unit))
             } else {
-                emit(Result.failure(Exception("Error: ${response.code()}")))
+                emit(Result.failure(Exception("Ошибка: ${response.code()}")))
             }
         } catch (e: Exception) {
             emit(Result.failure(e))

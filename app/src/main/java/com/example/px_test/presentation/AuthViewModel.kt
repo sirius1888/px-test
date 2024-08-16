@@ -2,12 +2,14 @@ package com.example.px_test.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.px_test.common.Constants
 import com.example.px_test.domain.AuthUseCase
 import com.vk.id.VKIDAuthFail
 import com.vk.id.VKIDUser
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
@@ -19,19 +21,20 @@ class AuthViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val _authState = MutableStateFlow<AuthState>(AuthState.Idle)
-    val authState: StateFlow<AuthState> = _authState
+    val authState: StateFlow<AuthState> = _authState.asStateFlow()
 
     fun sendAuthData(token: String, userData: VKIDUser) {
         viewModelScope.launch {
             authUseCase(token, userData)
                 .onStart { _authState.value = AuthState.Loading }
-                .catch { exception -> _authState.value = AuthState.Error(exception.message ?: "Unknown error") }
+                .catch { exception ->
+                    _authState.value = AuthState.Error(exception.message ?: Constants.ERROR_UNKNOWN)
+                }
                 .collect { result ->
-                    _authState.value = if (result.isSuccess) {
-                        AuthState.Success
-                    } else {
-                        AuthState.Error(result.exceptionOrNull()?.message ?: "Unknown error")
-                    }
+                    _authState.value = result.fold(
+                        onSuccess = { AuthState.Success },
+                        onFailure = { AuthState.Error(it.message ?: Constants.ERROR_UNKNOWN) }
+                    )
                 }
         }
     }
@@ -40,6 +43,7 @@ class AuthViewModel @Inject constructor(
         _authState.value = AuthState.Error(error.description)
     }
 }
+
 
 sealed class AuthState {
     object Idle : AuthState()
